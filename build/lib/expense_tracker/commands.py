@@ -1,4 +1,4 @@
-from expense_tracker.utils import is_expenses
+from utils import is_expenses
 from datetime import datetime
 
 def add_expense(description, amount, storage):
@@ -28,8 +28,7 @@ def summary(storage, target_month=None):
     total_expenses = 0
 
     for expense in expenses:
-        expenses_date = expense['date']
-        expense_month = datetime.strptime(expenses_date, "%Y-%m-%d").month
+        expense_month = expense["date"].month  # ← this is the key
 
         if target_month is None or target_month == expense_month:
             total_expenses += expense["amount"]

@@ -1,6 +1,6 @@
 import json
 import os
-from expense_tracker.utils import get_current_date
+from utils import get_current_date
 
 
 class Storage:
