@@ -1,4 +1,4 @@
-from utils import is_expenses, compare_months
+from utils import is_expenses
 from datetime import datetime
 
 def add_expense(description, amount, storage):
@@ -15,7 +15,7 @@ def show_expenses(storage):
     print(f"{'ID':<4}{'Date':<12}{'Description':<15}{'Amount':>8}")
 
     for expense in expenses:
-        print(f"{expense["id"]:<4}{expense["date"]:<12}{expense["description"]:<15}{"$" + str(expense["amount"]):>8}")
+        print(f"{expense['id']:<4}{expense['date']:<12}{expense['description']:<15}{'$' + str(expense['amount']):>8}")
 
 
 def summary(storage, target_month=None):
@@ -28,8 +28,7 @@ def summary(storage, target_month=None):
     total_expenses = 0
 
     for expense in expenses:
-        expense_date = datetime.strptime(expense["date"], "%Y-%m-%d")
-        expense_month = expense_date.month  # ← this is the key
+        expense_month = expense["date"].month  # ← this is the key
 
         if target_month is None or target_month == expense_month:
             total_expenses += expense["amount"]
