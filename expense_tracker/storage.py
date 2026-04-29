@@ -1,42 +1,50 @@
-def add_expense(description, amount, storage):
-    expense_id = storage.add(description, amount)
-    print(f"Expense added successfully (ID: {expense_id})")
+import json
+import os
+from utils import get_current_date
 
 
-def mark_in_progress(task_id, storage):
-    storage.update_status(task_id, "in-progress")
-    print(f"Task {task_id} marked as in progress")
+class Storage:
+    def __init__(self, filename):
+        self.filename = filename
+        if not os.path.exists(filename):
+            with open(filename, "w") as f:
+                json.dump([], f)
 
+    def _read(self):
+        try:
+            with open(self.filename, "r") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, FileNotFoundError):
+            return []
 
-def mark_done(task_id, storage):
-    storage.update_status(task_id, "done")
-    print(f"Task {task_id} marked as done")
+    def _write(self, data):
+        with open(self.filename, "w") as f:
+            json.dump(data, f, indent=2)
 
+    def get_all(self):
+        return self._read()
 
-def update(task_id, new_title, storage):
-    success = storage.update_title(task_id, new_title)
-    if success:
-        print(f"Task updated successfully (ID: {task_id})")
-    else:
-        print("Task not found")
+    def add(self, description, amount):
+        data = self._read()
+        expense_id = max([e["id"] for e in data], default=0) + 1
 
+        data.append({
+            "id": expense_id,
+            "description": description,
+            "amount": amount,
+            "date": get_current_date()
+        })
 
-def delete(task_id, storage):
-    success = storage.delete(task_id)
-    if success:
-        print(f"Task deleted successfully (ID: {task_id})")
-    else:
-        print("Task not found")
+        self._write(data)
+        return expense_id
 
+    def delete(self, expense_id):
+        data = self._read()
 
-def show(storage):
-    expenses = storage.get_all()
+        new_data = [expense for expense in data if expense["id"] != expense_id]
 
-    if not expenses:
-        print("No expenses found")
-        return
+        if len(data) == len(new_data):
+            return False
 
-    print(f"{'ID':<4}{'Date':<12}{'Description':<15}{'Amount':>8}")
-
-    for expense in expenses:
-        print(f"{expense["id"]:<4}{expense["date"]:<12}{expense["description"]:<15}{expense["amount"]:>8}")
+        self._write(new_data)
+        return True

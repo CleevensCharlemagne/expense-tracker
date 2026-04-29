@@ -1,6 +1,12 @@
 import argparse
 from commands import add_expense, delete_expense, summary, show_expenses
-from utils import valid_month
+
+def valid_month(value):
+    import argparse
+    ivalue = int(value)
+    if ivalue < 1 or ivalue > 12:
+        raise argparse.ArgumentTypeError("Month must be between 1 and 12")
+    return ivalue
 
 def dispatch(storage):
     parser = argparse.ArgumentParser(description='Expense Tracker')
